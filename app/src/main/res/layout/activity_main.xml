@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/background"
+    tools:context=".MainActivity">
+
+    <!-- Header -->
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_dark"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Scorecards (Vertical) -->
+    <LinearLayout
+        android:id="@+id/scorecards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="end"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/ScoreboardCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <LinearLayout style="@style/ScoreboardContainer">
+                <TextView
+                    style="@style/ScoreLabel"
+                    android:text="@string/score" />
+                <TextView
+                    style="@style/ScoreValue"
+                    android:id="@+id/score"
+                    android:text="0" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="16dp"/>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/ScoreboardCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <LinearLayout style="@style/ScoreboardContainer">
+                <TextView
+                    style="@style/ScoreLabel"
+                    android:text="@string/best" />
+                <TextView
+                    style="@style/ScoreValue"
+                    android:id="@+id/best"
+                    android:text="0" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/header_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="title,scorecards" />
+
+    <!-- Game Board -->
+    <FrameLayout
+        android:id="@+id/boardFrame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/board_background"
+        app:layout_constraintTop_toBottomOf="@id/header_barrier"
+        app:layout_constraintBottom_toTopOf="@id/restartButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1">
+
+        <GridLayout
+            android:id="@+id/board"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:columnCount="4"
+            android:rowCount="4">
+
+            <!-- Game Cells -->
+            <TextView android:id="@+id/cell00" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell01" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell02" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell03" style="@style/GameCell" android:layout_margin="8dp"/>
+
+            <TextView android:id="@+id/cell10" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell11" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell12" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell13" style="@style/GameCell" android:layout_margin="8dp"/>
+
+            <TextView android:id="@+id/cell20" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell21" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell22" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell23" style="@style/GameCell" android:layout_margin="8dp"/>
+
+            <TextView android:id="@+id/cell30" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell31" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell32" style="@style/GameCell" android:layout_margin="8dp"/>
+            <TextView android:id="@+id/cell33" style="@style/GameCell" android:layout_margin="8dp"/>
+        </GridLayout>
+    </FrameLayout>
+
+    <!-- Bottom Buttons -->
+    <Button
+        android:id="@+id/restartButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/restart"
+        android:textColor="@color/text_dark"
+        android:backgroundTint="@color/button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/undoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/undo"
+        android:textColor="@color/text_dark"
+        android:backgroundTint="@color/button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

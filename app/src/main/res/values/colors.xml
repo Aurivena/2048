@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Google-inspired 2048 Palette -->
+    <color name="background">#FDFCF9</color>
+    <color name="text_dark">#1D1B20</color>
+    <color name="text_light">#FFFFFF</color>
+    <color name="button">#E8DEF8</color>
+    <color name="board_background">#DED8D0</color>
+    <color name="cell_background">#EEE8E2</color>
+    <color name="score_card_background">#F7F2FA</color>
+</resources>
