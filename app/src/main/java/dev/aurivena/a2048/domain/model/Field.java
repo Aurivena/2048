@@ -1,0 +1,13 @@
+package dev.aurivena.a2048.domain.model;
+
+public class Field {
+    private final  int[][] cells;
+
+    public Field(int size) {
+        this.cells = new int[size][size];
+    }
+
+    public int[][] getCells() {
+        return cells;
+    }
+}
