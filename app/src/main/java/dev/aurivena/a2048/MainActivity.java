@@ -7,11 +7,18 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.w3c.dom.Text;
+
+import dev.aurivena.a2048.domain.model.Field;
+import dev.aurivena.a2048.domain.service.FieldService;
+
 public class MainActivity extends AppCompatActivity {
 
     private GridLayout board;
     private TextView scoreText, bestText;
     private Button newGameButton;
+    private FieldService fieldService;
+    private Field field;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,19 +31,35 @@ public class MainActivity extends AppCompatActivity {
         newGameButton = findViewById(R.id.restartButton);
 
         newGameButton.setOnClickListener(v -> startNewGame());
+        fieldService = new FieldService();
+
         startNewGame();
     }
-
     private void startNewGame() {
+        field = new Field(4);
         scoreText.setText("0");
-        bestText.setText("0");
+        fieldService.spawnInitialTiles(this.field);
 
-        // Очистка всех ячеек
+        renderField();
+    }
+
+    private  void renderField(){
+        int [][]cells = field.cells();
+        int size = cells.length;
+
         for (int i = 0; i < board.getChildCount(); i++) {
             TextView cell = (TextView) board.getChildAt(i);
-            cell.setText("");
-        }
 
-        // TODO: сюда добавишь логику генерации "2" и "4"
+            int row = i/size;
+            int col = i%size;
+
+            int value = cells[row][col];
+
+            if (value!=0){
+                cell.setText(String.valueOf(value));
+            }else{
+                cell.setText("");
+            }
+        }
     }
 }

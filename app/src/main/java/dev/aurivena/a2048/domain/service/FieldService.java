@@ -17,24 +17,30 @@ public class FieldService {
     }
 
     public void spawnInitialTiles(Field field) {
-        spawnRandomTile(field.getCells());
-        spawnRandomTile(field.getCells());
+        spawnRandomTile(field);
+        spawnRandomTile(field);
     }
 
-    public void spawnRandomTile(int[][] field) {
-        Position pos = findFreeCell(field);
+    public void spawnRandomTile(Field field) {
+        int[][] cells = field.cells();
+
+        Position pos = findFreeCell(cells);
         if (pos == null) return;
-        field[pos.x()][pos.y()] = randomTileValue();
+
+        cells[pos.x()][pos.y()] = randomTileValue();
     }
 
-    private Position findFreeCell(int[][] field) {
+    private Position findFreeCell(int[][] cells) {
         List<Position> positions = new ArrayList<>();
-        for (int x = 0; x < field.length; x++) {
-            for (int y = 0; y < field[x].length; y++) {
-                if (field[x][y] == 0) positions.add(new Position(x, y));
+
+        for (int x = 0; x < cells.length; x++) {
+            for (int y = 0; y < cells[x].length; y++) {
+                if (cells[x][y] == 0) positions.add(new Position(x, y));
             }
         }
+
         if (positions.isEmpty()) return null;
+
         return positions.get(random.nextInt(positions.size()));
     }
 

@@ -7,7 +7,7 @@ public class Field {
         this.cells = new int[size][size];
     }
 
-    public int[][] getCells() {
+    public int[][] cells() {
         return cells;
     }
 }
