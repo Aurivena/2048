@@ -1,6 +1,8 @@
 package dev.aurivena.a2048;
 
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -11,6 +13,7 @@ import org.w3c.dom.Text;
 
 import dev.aurivena.a2048.domain.model.Field;
 import dev.aurivena.a2048.domain.service.FieldService;
+import dev.aurivena.a2048.domain.service.MoveService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,7 +21,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView scoreText, bestText;
     private Button newGameButton;
     private FieldService fieldService;
+    private MoveService moveService;
+    private final int size = 4;
     private Field field;
+    GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,22 +35,58 @@ public class MainActivity extends AppCompatActivity {
         scoreText = findViewById(R.id.score);
         bestText = findViewById(R.id.best);
         newGameButton = findViewById(R.id.restartButton);
+        moveService = new MoveService();
 
         newGameButton.setOnClickListener(v -> startNewGame());
         fieldService = new FieldService();
 
         startNewGame();
+
+
+        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            private static final int SWIPE_THRESHOLD = 100;
+            private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                int [][] cells = field.cells();
+                float diffX = e2.getX() - e1.getX();
+
+                float diffY = e2.getY() - e1.getY();
+
+                if (Math.abs(diffX) > Math.abs(e2.getY() - e1.getY())) {
+                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX < 0) {
+                            move(cells);
+                        } else {
+                            move(cells);
+                        }
+                        return true;
+                    }
+                }else {
+                    if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffY < 0) {
+                           move(cells);
+                        } else {
+                            move(cells);
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
     }
     private void startNewGame() {
-        field = new Field(4);
+        field = new Field(this.size);
         scoreText.setText("0");
         fieldService.spawnInitialTiles(this.field);
+        int [][]cells = field.cells();
 
-        renderField();
+        renderField(cells);
     }
 
-    private  void renderField(){
-        int [][]cells = field.cells();
+    private  void renderField(int [][]cells){
         int size = cells.length;
 
         for (int i = 0; i < board.getChildCount(); i++) {
@@ -62,4 +104,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void move(int [][]cells){
+        moveService.move(cells);
+        renderField(cells);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return gestureDetector.onTouchEvent(event);
+    }
 }
+
