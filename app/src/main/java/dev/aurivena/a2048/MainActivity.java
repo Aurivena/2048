@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.w3c.dom.Text;
 
 import dev.aurivena.a2048.domain.model.Field;
+import dev.aurivena.a2048.domain.model.State;
 import dev.aurivena.a2048.domain.service.FieldService;
 import dev.aurivena.a2048.domain.service.MoveService;
 
@@ -34,11 +35,12 @@ public class MainActivity extends AppCompatActivity {
         board = findViewById(R.id.board);
         scoreText = findViewById(R.id.score);
         bestText = findViewById(R.id.best);
+
         newGameButton = findViewById(R.id.restartButton);
         moveService = new MoveService();
+        fieldService = new FieldService();
 
         newGameButton.setOnClickListener(v -> startNewGame());
-        fieldService = new FieldService();
 
         startNewGame();
 
@@ -57,18 +59,18 @@ public class MainActivity extends AppCompatActivity {
                 if (Math.abs(diffX) > Math.abs(e2.getY() - e1.getY())) {
                     if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffX < 0) {
-                            move(cells);
+                            rotateField(cells, State.LEFT);
                         } else {
-                            move(cells);
+                            rotateField(cells, State.RIGHT);
                         }
                         return true;
                     }
                 }else {
                     if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffY < 0) {
-                           move(cells);
+                            rotateField(cells, State.DOWN);
                         } else {
-                            move(cells);
+                            rotateField(cells, State.TOP);
                         }
                         return true;
                     }
@@ -105,10 +107,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void move(int [][]cells){
-        moveService.move(cells);
-        renderField(cells);
+    private void rotateField(int [][]cells, State state){
+        int normalized = 4;
+        int[][] result = cells;
+        int coups = 0;
+        while (coups<state.getValue()){
+            result =  moveService.rotate(result);
+            coups++;
+        }
+
+        moveService.move(result);
+
+        while (normalized>state.getValue() && state.getValue() != State.LEFT.getValue()) {
+            result = moveService.rotate(result);
+            normalized--;
+        }
+
+       renderField(result);
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
