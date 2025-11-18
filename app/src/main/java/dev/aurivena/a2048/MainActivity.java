@@ -21,11 +21,15 @@ public class MainActivity extends AppCompatActivity {
     private GridLayout board;
     private TextView scoreText, bestText;
     private Button newGameButton;
+    private Button undoButton;
     private FieldService fieldService;
     private MoveService moveService;
     private final int size = 4;
     private Field field;
     GestureDetector gestureDetector;
+    private int[][] cellsCache;
+
+    private int[][] cells;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +41,12 @@ public class MainActivity extends AppCompatActivity {
         bestText = findViewById(R.id.best);
 
         newGameButton = findViewById(R.id.restartButton);
+        undoButton = findViewById(R.id.undoButton);
         moveService = new MoveService();
         fieldService = new FieldService();
 
         newGameButton.setOnClickListener(v -> startNewGame());
+        undoButton.setOnClickListener(v -> undo());
 
         startNewGame();
 
@@ -59,18 +65,18 @@ public class MainActivity extends AppCompatActivity {
                 if (Math.abs(diffX) > Math.abs(e2.getY() - e1.getY())) {
                     if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffX < 0) {
-                            rotateField(cells, State.LEFT);
+                            rotateField( State.LEFT);
                         } else {
-                            rotateField(cells, State.RIGHT);
+                            rotateField( State.RIGHT);
                         }
                         return true;
                     }
                 }else {
                     if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffY < 0) {
-                            rotateField(cells, State.DOWN);
+                            rotateField( State.DOWN);
                         } else {
-                            rotateField(cells, State.TOP);
+                            rotateField( State.TOP);
                         }
                         return true;
                     }
@@ -83,12 +89,13 @@ public class MainActivity extends AppCompatActivity {
         field = new Field(this.size);
         scoreText.setText("0");
         fieldService.spawnInitialTiles(this.field);
-        int [][]cells = field.cells();
+        cells = field.cells();
+        cellsCache = cells;
 
-        renderField(cells);
+        renderField();
     }
 
-    private  void renderField(int [][]cells){
+    private  void renderField(){
         int size = cells.length;
 
         for (int i = 0; i < board.getChildCount(); i++) {
@@ -107,23 +114,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void rotateField(int [][]cells, State state){
+    private void rotateField( State state){
+        int[][] cache =cells;
+        cellsCache = cache;
         int normalized = 4;
-        int[][] result = cells;
         int coups = 0;
         while (coups<state.getValue()){
-            result =  moveService.rotate(result);
+            cells =  moveService.rotate(cells);
             coups++;
         }
 
-        moveService.move(result);
+        moveService.move(cells);
 
         while (normalized>state.getValue() && state.getValue() != State.LEFT.getValue()) {
-            result = moveService.rotate(result);
+            cells = moveService.rotate(cells);
             normalized--;
         }
 
-       renderField(result);
+       renderField();
+    }
+
+    private void undo(){
+        cells = cellsCache;
+        renderField();
     }
 
 
