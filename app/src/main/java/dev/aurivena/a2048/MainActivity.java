@@ -131,6 +131,11 @@ public class MainActivity extends AppCompatActivity {
             normalized--;
         }
 
+        field.set(cells);
+
+        fieldService.spawnRandomTile(field);
+
+        cells = field.cells();
        renderField();
     }
 

@@ -1,7 +1,5 @@
 package dev.aurivena.a2048.domain.service;
 
-import dev.aurivena.a2048.domain.model.State;
-
 public class MoveService {
     public MoveService() {
     }
