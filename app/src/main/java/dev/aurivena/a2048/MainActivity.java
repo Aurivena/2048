@@ -120,14 +120,16 @@ public class MainActivity extends AppCompatActivity {
             coups++;
         }
 
-        moveService.move(cells);
+        boolean changed = moveService.move(cells);
 
         while (normalized>state.getValue() && state.getValue() != State.LEFT.getValue()) {
             cells = moveService.rotate(cells);
             normalized--;
         }
 
-        appendNewTile();
+        if (changed){
+            appendNewTile();
+        }
         renderField();
     }
 
