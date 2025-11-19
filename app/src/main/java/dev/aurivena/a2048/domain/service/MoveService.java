@@ -5,18 +5,17 @@ public class MoveService {
     }
 
     public void move(int[][]field){
-        final int defaultValue = 0;
-
         for (int row=0;row<field.length;row++){
-            for (int col = 0; col<field[row].length-1;col++){
-                int startValue = field[row][col];
-                int sum = field[row][col]+ field[row][col+1];
-                if (sum!=startValue){
-                    field[row][col] = sum;
-                }
+          int[] cmp = compress(field[row]);
 
-                field[row][col+1] = defaultValue;
-            }
+          for (int i=0;i<cmp.length-1;i++) {
+              if (cmp[i]!=0 && cmp[i]== cmp[i+1]){
+                  cmp[i] *=2;
+                  cmp[i+1] = 0;
+              }
+
+              field[row] = compress(cmp);
+          }
         }
     }
 
@@ -32,4 +31,17 @@ public class MoveService {
 
         return result;
     };
+
+    private int[]compress(int[] row){
+        int[] compressed = new int[row.length];
+        int index = 0;
+
+        for (int r : row) {
+            if (r != 0) {
+                compressed[index++] = r;
+            }
+        }
+
+        return compressed;
+    }
 }

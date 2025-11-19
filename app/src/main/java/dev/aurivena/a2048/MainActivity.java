@@ -9,8 +9,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.w3c.dom.Text;
-
 import dev.aurivena.a2048.domain.model.Field;
 import dev.aurivena.a2048.domain.model.State;
 import dev.aurivena.a2048.domain.service.FieldService;
@@ -20,11 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
     private GridLayout board;
     private TextView scoreText, bestText;
-    private Button newGameButton;
-    private Button undoButton;
     private FieldService fieldService;
     private MoveService moveService;
-    private final int size = 4;
     private Field field;
     GestureDetector gestureDetector;
     private int[][] cellsCache;
@@ -40,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
         scoreText = findViewById(R.id.score);
         bestText = findViewById(R.id.best);
 
-        newGameButton = findViewById(R.id.restartButton);
-        undoButton = findViewById(R.id.undoButton);
+        Button newGameButton = findViewById(R.id.restartButton);
+        Button undoButton = findViewById(R.id.undoButton);
         moveService = new MoveService();
         fieldService = new FieldService();
 
@@ -86,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void startNewGame() {
-        field = new Field(this.size);
+        int size = 4;
+        field = new Field(size);
         scoreText.setText("0");
         fieldService.spawnInitialTiles(this.field);
         cells = field.cells();
@@ -115,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void rotateField( State state){
-        int[][] cache =cells;
+        int[][] cache = cells;
         cellsCache = cache;
         int normalized = 4;
         int coups = 0;
@@ -131,18 +127,30 @@ public class MainActivity extends AppCompatActivity {
             normalized--;
         }
 
-        field.set(cells);
-
-        fieldService.spawnRandomTile(field);
-
-        cells = field.cells();
-       renderField();
+        appendNewTile();
+        renderField();
     }
 
     private void undo(){
         cells = cellsCache;
         renderField();
     }
+
+    private void appendNewTile(){
+        field.set(cells);
+        fieldService.spawnRandomTile(field);
+        cells = field.cells();
+    }
+
+    private void updateBest() {
+        if (Integer.getInteger(scoreText.getText().toString()) > Integer.getInteger(bestText.getText().toString())) {
+            bestText.setText(scoreText.getText().toString());
+        }
+    }
+
+//    private updateScore(){
+//
+//    }
 
 
     @Override
