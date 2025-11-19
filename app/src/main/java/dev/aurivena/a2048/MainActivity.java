@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private FieldService fieldService;
     private MoveService moveService;
     private Field field;
+    private int bestScore;
     GestureDetector gestureDetector;
 
     private int[][] cells;
@@ -93,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
         fieldService.spawnInitialTiles(this.field);
         cells = field.cells();
         cacheService.put(Cache.Cells, cells);
+
+        if (cacheService.get(Cache.Best) != null){
+            cacheService.put(Cache.Best,bestScore);
+        }
 
         renderField();
     }
@@ -173,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
         int best  = Integer.parseInt(bestText.getText().toString());
         if (score > best) {
             cacheService.put(Cache.Best,best);
+            bestScore = score;
             bestText.setText(String.valueOf(score));
         }
     }
