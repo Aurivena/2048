@@ -12,8 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.HashMap;
 
+import dev.aurivena.a2048.domain.model.Cache;
 import dev.aurivena.a2048.domain.model.Field;
 import dev.aurivena.a2048.domain.model.State;
+import dev.aurivena.a2048.domain.service.CacheService;
 import dev.aurivena.a2048.domain.service.FieldService;
 import dev.aurivena.a2048.domain.service.MoveService;
 
@@ -21,11 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
     private GridLayout board;
     private TextView scoreText, bestText;
+    private CacheService cacheService;
     private FieldService fieldService;
     private MoveService moveService;
     private Field field;
     GestureDetector gestureDetector;
-    private int[][] cellsCache;
 
     private int[][] cells;
 
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        cacheService = new CacheService();
 
         board = findViewById(R.id.board);
         scoreText = findViewById(R.id.score);
@@ -55,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                int [][] cells = field.cells();
                 float diffX = e2.getX() - e1.getX();
 
                 float diffY = e2.getY() - e1.getY();
@@ -89,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         scoreText.setText("0");
         fieldService.spawnInitialTiles(this.field);
         cells = field.cells();
-        cellsCache = cells;
+        cacheService.put(Cache.Cells, cells);
 
         renderField();
     }
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void rotateField( State state){
         int[][] cache = cells;
-        cellsCache = cache;
+        cacheService.put(Cache.Cells, cache);
         int normalized = 4;
         int coups = 0;
         while (coups<state.getValue()){
@@ -139,7 +142,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void undo(){
-        cells = cellsCache;
+        int[][] cache = cacheService.get(Cache.Cells);
+        if (cache == null){
+            return;
+        }
+        cells = cache;
         renderField();
     }
 
