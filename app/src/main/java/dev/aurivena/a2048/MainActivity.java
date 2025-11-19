@@ -146,6 +146,18 @@ public class MainActivity extends AppCompatActivity {
         if (cache == null){
             return;
         }
+        int best = 0, score = 0;
+
+        if (cacheService.get(Cache.Best) != null){
+            best = cacheService.get(Cache.Best);
+        }
+
+        if (cacheService.get(Cache.Score) != null){
+            score = cacheService.get(Cache.Score);
+        }
+
+        bestText.setText(String.valueOf(best));
+        scoreText.setText(String.valueOf(score));
         cells = cache;
         renderField();
     }
@@ -160,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         int score = Integer.parseInt(scoreText.getText().toString());
         int best  = Integer.parseInt(bestText.getText().toString());
         if (score > best) {
+            cacheService.put(Cache.Best,best);
             bestText.setText(String.valueOf(score));
         }
     }
@@ -167,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateScore(){
         HashMap<Integer,int[]> changes = moveService.getArrayChanges();
         int score = Integer.parseInt(scoreText.getText().toString());
+        cacheService.put(Cache.Score,score);
 
         for (int i = 0; i < changes.size(); i++) {
             int[] change = changes.get(i);
@@ -176,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         moveService.clearArrayChanges();
+
 
         scoreText.setText(String.valueOf(score));
     }
