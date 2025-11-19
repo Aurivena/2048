@@ -1,5 +1,6 @@
 package dev.aurivena.a2048;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -8,6 +9,8 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.HashMap;
 
 import dev.aurivena.a2048.domain.model.Field;
 import dev.aurivena.a2048.domain.model.State;
@@ -128,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (changed){
+            updateScore();
+            updateBest();
             appendNewTile();
         }
         renderField();
@@ -145,14 +150,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateBest() {
-        if (Integer.getInteger(scoreText.getText().toString()) > Integer.getInteger(bestText.getText().toString())) {
-            bestText.setText(scoreText.getText().toString());
+        int score = Integer.parseInt(scoreText.getText().toString());
+        int best  = Integer.parseInt(bestText.getText().toString());
+        if (score > best) {
+            bestText.setText(String.valueOf(score));
         }
     }
 
-//    private updateScore(){
-//
-//    }
+    private void updateScore(){
+        HashMap<Integer,int[]> changes = moveService.getArrayChanges();
+        int score = Integer.parseInt(scoreText.getText().toString());
+
+        for (int i = 0; i < changes.size(); i++) {
+            int[] change = changes.get(i);
+            for (int c : change) {
+                score+=c;
+            }
+        }
+
+        moveService.clearArrayChanges();
+
+        scoreText.setText(String.valueOf(score));
+    }
 
 
     @Override

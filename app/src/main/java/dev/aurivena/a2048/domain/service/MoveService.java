@@ -1,9 +1,16 @@
 package dev.aurivena.a2048.domain.service;
 
-import java.lang.reflect.Array;
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class MoveService {
+    private HashMap<Integer,int[]>arrayChanges = new HashMap<>();
+    private int indexMap;
     public MoveService() {
     }
 
@@ -12,8 +19,8 @@ public class MoveService {
         for (int row=0;row<field.length;row++){
 
           int[] compressed = compress(field[row]);
-          int[] merged = merge(compressed);
-          int[] finalLine = compress(merged);
+          merge(compressed);
+          int[] finalLine = compress(compressed);
 
           if (!Arrays.equals(field[row], finalLine)){
               field[row] = finalLine;
@@ -36,15 +43,28 @@ public class MoveService {
         return result;
     };
 
-    private int[] merge(int[] row){
+    public HashMap<Integer, int[]> getArrayChanges(){
+        return arrayChanges;
+    }
+
+    public void clearArrayChanges(){
+        arrayChanges.clear();
+        indexMap = 0;
+    }
+
+    private void merge(int[] row){
+        int[] arrayChanges = new int[16];
+        int index = 0;
         for (int i=0;i<row.length-1;i++) {
             if (row[i]!=0 && row[i] == row[i+1]){
                 row[i] *=2;
+                arrayChanges[index++] = row[i];
                 row[i+1] = 0;
             }
         }
-        return row;
+        this.arrayChanges.put(indexMap++,arrayChanges);
     }
+
 
     private int[]compress(int[] row){
         int[] compressed = new int[row.length];
