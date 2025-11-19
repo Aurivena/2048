@@ -1,6 +1,5 @@
 package dev.aurivena.a2048;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
