@@ -6,10 +6,10 @@ import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
+import android.view.KeyEvent;
+
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.HashMap;
 
 import dev.aurivena.a2048.domain.model.Cache;
 import dev.aurivena.a2048.domain.model.Field;
@@ -86,13 +86,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return gestureDetector.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_LEFT -> {
+                rotateField(State.LEFT);
+                yield true;
+            }
+            case KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                rotateField(State.RIGHT);
+                yield true;
+            }
+            case KeyEvent.KEYCODE_DPAD_UP -> {
+                rotateField(State.DOWN);
+                yield true;
+            }
+            case KeyEvent.KEYCODE_DPAD_DOWN -> {
+                rotateField(State.TOP);
+                yield true;
+            }
+            default -> super.onKeyDown(keyCode, event);
+        };
+    }
+
     private void startNewGame() {
         int size = 4;
         field = new Field(size);
         scoreText.setText("0");
         fieldService.spawnInitialTiles(this.field);
         cells = field.cells();
-        cacheService.put(Cache.Cells, cells);
+        cacheService.put(Cache.Cells, cacheService.copy(cells));
 
         if (cacheService.get(Cache.Best) != null){
             cacheService.put(Cache.Best,bestScore);
@@ -121,8 +150,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void rotateField( State state){
-        int[][] cache = cells;
-        cacheService.put(Cache.Cells, cache);
+        cacheService.put(Cache.Cells, cacheService.copy(cells));
         int normalized = 4;
         int coups = 0;
         while (coups<state.getValue()){
@@ -141,6 +169,11 @@ public class MainActivity extends AppCompatActivity {
             updateScore();
             updateBest();
             appendNewTile();
+
+            if (!moveService.hasMoves(cells)){
+                startNewGame();
+                return;
+            }
         }
         renderField();
     }
@@ -176,34 +209,21 @@ public class MainActivity extends AppCompatActivity {
         int score = Integer.parseInt(scoreText.getText().toString());
         int best  = Integer.parseInt(bestText.getText().toString());
         if (score > best) {
-            cacheService.put(Cache.Best,best);
-            bestScore = score;
-            bestText.setText(String.valueOf(score));
+            best = score;
+            cacheService.put(Cache.Best, best);
+            bestText.setText(String.valueOf(best));
         }
     }
 
     private void updateScore(){
-        HashMap<Integer,int[]> changes = moveService.getArrayChanges();
         int score = Integer.parseInt(scoreText.getText().toString());
         cacheService.put(Cache.Score,score);
 
-        for (int i = 0; i < changes.size(); i++) {
-            int[] change = changes.get(i);
-            for (int c : change) {
-                score+=c;
-            }
-        }
+        int add = moveService.getLastScoreGain();
 
-        moveService.clearArrayChanges();
-
+        score+=add;
 
         scoreText.setText(String.valueOf(score));
-    }
-
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return gestureDetector.onTouchEvent(event);
     }
 }
 

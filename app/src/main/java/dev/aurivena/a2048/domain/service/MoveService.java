@@ -3,24 +3,60 @@ package dev.aurivena.a2048.domain.service;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import dev.aurivena.a2048.domain.model.Side;
+
 public class MoveService {
-    private HashMap<Integer,int[]>arrayChanges = new HashMap<>();
-    private int indexMap;
-    public MoveService() {
+
+    public int lastScoreGain = 0;
+    public  MoveService() {
+    }
+
+    public int getLastScoreGain() {
+        return lastScoreGain;
+    }
+
+    public boolean hasMoves(int[][]field) {
+        for (int[] row : field){
+            for (int v: row){
+                if (v==0) return true;
+            }
+        }
+
+        if (checkSide(Side.Horizontal,field) || checkSide(Side.Vertical, field)) return true;
+
+        return false;
+    }
+
+    private boolean checkSide(Side side, int[][] field){
+        for (int i = 0; i< field.length;i++){
+            for (int j = 0; j<field.length-1;j++){
+                if (side == Side.Horizontal) {
+                    if (field[i][j] == field[i][j+1]) return true;
+                }
+                if (side == Side.Vertical){
+                    if (field[j][i] == field[j+1][i]) return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public boolean move(int[][]field){
         boolean changed = false;
-        for (int row=0;row<field.length;row++){
+        lastScoreGain = 0;
 
-          int[] compressed = compress(field[row]);
-          merge(compressed);
-          int[] finalLine = compress(compressed);
+        for (int[] line : field) {
 
-          if (!Arrays.equals(field[row], finalLine)){
-              field[row] = finalLine;
-              changed = true;
-          }
+            int[] before = Arrays.copyOf(line, line.length);
+
+            compress(line);
+            lastScoreGain += merge(line);
+            compress(line);
+
+            if (!Arrays.equals(before, line)) {
+                changed = true;
+            }
         }
         return changed;
     }
@@ -38,39 +74,31 @@ public class MoveService {
         return result;
     };
 
-    public HashMap<Integer, int[]> getArrayChanges(){
-        return arrayChanges;
-    }
+    private int merge(int[] row){
+        int gained = 0;
 
-    public void clearArrayChanges(){
-        arrayChanges.clear();
-        indexMap = 0;
-    }
-
-    private void merge(int[] row){
-        int[] arrayChanges = new int[16];
-        int index = 0;
         for (int i=0;i<row.length-1;i++) {
             if (row[i]!=0 && row[i] == row[i+1]){
                 row[i] *=2;
-                arrayChanges[index++] = row[i];
+                gained+=row[i];
                 row[i+1] = 0;
             }
         }
-        this.arrayChanges.put(indexMap++,arrayChanges);
+        return gained;
     }
 
 
-    private int[]compress(int[] row){
-        int[] compressed = new int[row.length];
+    private void compress(int[] row){
         int index = 0;
 
         for (int r : row) {
             if (r != 0) {
-                compressed[index++] = r;
+               row[index++] = r;
             }
         }
 
-        return compressed;
+        while (index<row.length) {
+            row[index++] = 0;
+        }
     }
 }
