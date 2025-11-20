@@ -209,9 +209,9 @@ public class MainActivity extends AppCompatActivity {
         int score = Integer.parseInt(scoreText.getText().toString());
         int best  = Integer.parseInt(bestText.getText().toString());
         if (score > best) {
-            best = score;
             cacheService.put(Cache.Best, best);
-            bestText.setText(String.valueOf(best));
+            bestScore = score;
+            bestText.setText(String.valueOf(score));
         }
     }
 
