@@ -23,7 +23,7 @@
   - управление состоянием игры;
   - вызовы бизнес-логики.
 
-- **Доменная модель** — Field, Position, State, Cache.
+- **Доменная модель** — Field, Position, State, Cache, Side.
   - Простые структуры данных, не содержащие логики.
 
 - **Доменные сервисы** — FieldService, MoveService, CacheService, SnapshotService.
