@@ -95,6 +95,7 @@ public class GameCenter {
         if (cache == null){
             return;
         }
+
         int best = 0, score = 0;
 
         Integer cacheBest = cacheService.get(Cache.Best);
@@ -107,8 +108,12 @@ public class GameCenter {
             score = cachedScore;
         }
 
+        this.bestScore = best;
+        this.score = score;
+
         bestText.setText(String.valueOf(best));
         scoreText.setText(String.valueOf(score));
+
         cells = cache;
         renderField();
     }
@@ -139,21 +144,15 @@ public class GameCenter {
     }
 
     private void updateBest() {
-        int score = Integer.parseInt(scoreText.getText().toString());
-        int best  = Integer.parseInt(bestText.getText().toString());
-        if (score > best) {
-            cacheService.put(Cache.Best, best);
+        if (score > bestScore) {
             bestScore = score;
             bestText.setText(String.valueOf(bestScore));
         }
     }
 
     private void updateScore(){
-        cacheService.put(Cache.Score, score);
-
         int add = moveService.getLastScoreGain();
         score += add;
-
         scoreText.setText(String.valueOf(score));
     }
 
