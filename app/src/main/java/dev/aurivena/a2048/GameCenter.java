@@ -11,6 +11,7 @@ import dev.aurivena.a2048.domain.model.State;
 import dev.aurivena.a2048.domain.service.CacheService;
 import dev.aurivena.a2048.domain.service.FieldService;
 import dev.aurivena.a2048.domain.service.MoveService;
+import dev.aurivena.a2048.domain.service.SnapshotService;
 
 public class GameCenter {
 
@@ -20,8 +21,10 @@ public class GameCenter {
     private final CacheService cacheService;
     private final FieldService fieldService;
     private final MoveService moveService;
+    private final SnapshotService snapshotService;
     private Field field;
     private int bestScore;
+    private int score;
 
     private int[][] cells;
 
@@ -34,6 +37,7 @@ public class GameCenter {
 
         moveService = new MoveService();
         fieldService = new FieldService();
+        snapshotService = new SnapshotService();
     }
 
     public void startNewGame() {
@@ -42,17 +46,19 @@ public class GameCenter {
         scoreText.setText("0");
         fieldService.spawnInitialTiles(this.field);
         cells = field.cells();
-        cacheService.put(Cache.Cells, cacheService.copy(cells));
+        clearInterimData();
 
-        if (cacheService.get(Cache.Best) != null){
-            cacheService.put(Cache.Best,bestScore);
+        Integer cachedBest = cacheService.get(Cache.Best);
+        if (cachedBest != null) {
+            bestScore = cachedBest;
+            bestText.setText(String.valueOf(bestScore));
         }
 
         renderField();
     }
 
-    public void rotateField( State state){
-        cacheService.put(Cache.Cells, cacheService.copy(cells));
+    public void rotateField(State state){
+        snapshotService.copy(cells);
         int normalized = 4;
         int coups = 0;
         while (coups<state.getValue()){
@@ -68,6 +74,10 @@ public class GameCenter {
         }
 
         if (changed){
+            cacheService.put(Cache.Cells, snapshotService.getSnapshot());
+            cacheService.put(Cache.Score, score);
+            cacheService.put(Cache.Best, bestScore);
+
             updateScore();
             updateBest();
             appendNewTile();
@@ -87,12 +97,14 @@ public class GameCenter {
         }
         int best = 0, score = 0;
 
-        if (cacheService.get(Cache.Best) != null){
-            best = cacheService.get(Cache.Best);
+        Integer cacheBest = cacheService.get(Cache.Best);
+        if (cacheBest != null){
+            best = cacheBest;
         }
 
-        if (cacheService.get(Cache.Score) != null){
-            score = cacheService.get(Cache.Score);
+        Integer cachedScore = cacheService.get(Cache.Score);
+        if (cachedScore != null){
+            score = cachedScore;
         }
 
         bestText.setText(String.valueOf(best));
@@ -132,18 +144,23 @@ public class GameCenter {
         if (score > best) {
             cacheService.put(Cache.Best, best);
             bestScore = score;
-            bestText.setText(String.valueOf(score));
+            bestText.setText(String.valueOf(bestScore));
         }
     }
 
     private void updateScore(){
-        int score = Integer.parseInt(scoreText.getText().toString());
-        int old = score;
-        cacheService.put(Cache.Score,old);
+        cacheService.put(Cache.Score, score);
 
         int add = moveService.getLastScoreGain();
-        score+=add;
+        score += add;
 
         scoreText.setText(String.valueOf(score));
+    }
+
+    private void clearInterimData(){
+        snapshotService.copy(cells);
+        cacheService.put(Cache.Cells,snapshotService.getSnapshot());
+        cacheService.put(Cache.Score,0);
+        score = 0;
     }
 }

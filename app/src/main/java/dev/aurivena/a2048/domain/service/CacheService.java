@@ -15,14 +15,6 @@ public class CacheService {
         cache.put(key, value);
     }
 
-    public int[][] copy(int[][] src) {
-        int[][] dst = new int[src.length][src[0].length];
-        for (int i = 0; i < src.length; i++) {
-            System.arraycopy(src[i], 0, dst[i], 0, src[i].length);
-        }
-        return dst;
-    }
-
     @SuppressWarnings("unchecked")
     public <T> T get(Cache key) {
         return (T) cache.get(key);
