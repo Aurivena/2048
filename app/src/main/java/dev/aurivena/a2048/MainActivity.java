@@ -217,10 +217,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateScore(){
         int score = Integer.parseInt(scoreText.getText().toString());
-        cacheService.put(Cache.Score,score);
+        int old = score;
+        cacheService.put(Cache.Score,old);
 
         int add = moveService.getLastScoreGain();
-
         score+=add;
 
         scoreText.setText(String.valueOf(score));
