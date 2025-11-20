@@ -26,7 +26,7 @@
 - **Доменная модель** — Field, Position, State, Cache.
   - Простые структуры данных, не содержащие логики.
 
-- **Доменные сервисы** — FieldService, MoveService, CacheService.
+- **Доменные сервисы** — FieldService, MoveService, CacheService, SnapshotService.
   - чистая бизнес-логика:
     - генерация новых плиток;
     - поиск свободных ячеек;
