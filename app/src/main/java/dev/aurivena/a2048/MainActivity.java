@@ -87,11 +87,11 @@ public class MainActivity extends AppCompatActivity {
                 yield true;
             }
             case KeyEvent.KEYCODE_DPAD_UP -> {
-                gameCenter.rotateField(State.DOWN);
+                gameCenter.rotateField(State.UP);
                 yield true;
             }
             case KeyEvent.KEYCODE_DPAD_DOWN -> {
-                gameCenter.rotateField(State.UP);
+                gameCenter.rotateField(State.DOWN);
                 yield true;
             }
             default -> super.onKeyDown(keyCode, event);
