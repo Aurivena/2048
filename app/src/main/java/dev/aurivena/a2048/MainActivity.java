@@ -34,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
             private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
             @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 float diffX = e2.getX() - e1.getX();
 
@@ -53,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                         if (diffY < 0) {
                             gameCenter.rotateField( State.DOWN);
                         } else {
-                            gameCenter.rotateField( State.TOP);
+                            gameCenter.rotateField( State.UP);
                         }
                         return true;
                     }
@@ -67,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onTouchEvent(MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
     }
+
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -84,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 yield true;
             }
             case KeyEvent.KEYCODE_DPAD_DOWN -> {
-                gameCenter.rotateField(State.TOP);
+                gameCenter.rotateField(State.UP);
                 yield true;
             }
             default -> super.onKeyDown(keyCode, event);

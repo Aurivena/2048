@@ -4,9 +4,7 @@ plugins {
 
 android {
     namespace = "dev.aurivena.a2048"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "dev.aurivena.a2048"

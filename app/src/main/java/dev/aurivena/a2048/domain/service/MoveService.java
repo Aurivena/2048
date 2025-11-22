@@ -7,7 +7,7 @@ import dev.aurivena.a2048.domain.model.Side;
 
 public class MoveService {
 
-    public int lastScoreGain = 0;
+    private int lastScoreGain = 0;
     public  MoveService() {
     }
 

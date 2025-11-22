@@ -2,9 +2,6 @@ package dev.aurivena.a2048;
 
 import android.widget.GridLayout;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import dev.aurivena.a2048.domain.model.Cache;
 import dev.aurivena.a2048.domain.model.Field;
 import dev.aurivena.a2048.domain.model.State;
