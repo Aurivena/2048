@@ -3,16 +3,12 @@ package dev.aurivena.a2048.domain.service;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import dev.aurivena.a2048.domain.model.MoveResult;
 import dev.aurivena.a2048.domain.model.Side;
 
 public class MoveService {
 
-    private int lastScoreGain = 0;
     public  MoveService() {
-    }
-
-    public int getLastScoreGain() {
-        return lastScoreGain;
     }
 
     public boolean hasMoves(int[][]field) {
@@ -42,9 +38,9 @@ public class MoveService {
         return false;
     }
 
-    public boolean move(int[][]field){
+    public MoveResult move(int[][]field){
         boolean changed = false;
-        lastScoreGain = 0;
+        int lastScoreGain = 0;
 
         for (int[] line : field) {
 
@@ -58,7 +54,7 @@ public class MoveService {
                 changed = true;
             }
         }
-        return changed;
+        return new MoveResult(changed, lastScoreGain);
     }
 
     public int[][] rotate(int[][] field){

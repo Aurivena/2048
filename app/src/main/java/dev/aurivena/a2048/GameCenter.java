@@ -4,6 +4,7 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 import dev.aurivena.a2048.domain.model.Cache;
 import dev.aurivena.a2048.domain.model.Field;
+import dev.aurivena.a2048.domain.model.MoveResult;
 import dev.aurivena.a2048.domain.model.State;
 import dev.aurivena.a2048.domain.service.CacheService;
 import dev.aurivena.a2048.domain.service.FieldService;
@@ -12,46 +13,40 @@ import dev.aurivena.a2048.domain.service.SnapshotService;
 
 public class GameCenter {
 
-    private final GridLayout board;
-    private final TextView scoreText;
-    private final TextView bestText;
     private final CacheService cacheService;
     private final FieldService fieldService;
     private final MoveService moveService;
     private final SnapshotService snapshotService;
+    private final GameUI gameUI;
+
     private Field field;
+    private int[][] cells;
     private int bestScore;
     private int score;
 
-    private int[][] cells;
 
     public GameCenter(GridLayout board, TextView scoreText, TextView bestText){
         cacheService = new CacheService();
-
-        this.board = board;
-        this.scoreText = scoreText;
-        this.bestText = bestText;
-
         moveService = new MoveService();
         fieldService = new FieldService();
         snapshotService = new SnapshotService();
+        gameUI = new GameUI(board, scoreText, bestText);
     }
 
     public void startNewGame() {
-        int size = 4;
+        final int size = 4;
         field = new Field(size);
-        scoreText.setText("0");
+        gameUI.setScore(0);
         fieldService.spawnInitialTiles(this.field);
         cells = field.cells();
         clearInterimData();
 
         Integer cachedBest = cacheService.get(Cache.Best);
-        if (cachedBest != null) {
-            bestScore = cachedBest;
-            bestText.setText(String.valueOf(bestScore));
+        if (cachedBest != null && bestScore < cachedBest) {
+                gameUI.setBestScore(bestScore);
         }
 
-        renderField();
+       gameUI.renderField(cells);
     }
 
     public void rotateField(State state){
@@ -63,28 +58,30 @@ public class GameCenter {
             coups++;
         }
 
-        boolean changed = moveService.move(cells);
+       MoveResult moveResult = moveService.move(cells);
 
         while (normalized>state.getValue() && state.getValue() != State.LEFT.getValue()) {
             cells = moveService.rotate(cells);
             normalized--;
         }
 
-        if (changed){
-            cacheService.put(Cache.Cells, snapshotService.getSnapshot());
-            cacheService.put(Cache.Score, score);
-            cacheService.put(Cache.Best, bestScore);
-
-            updateScore();
-            updateBest();
-            appendNewTile();
-
-            if (!moveService.hasMoves(cells)){
-                startNewGame();
-                return;
-            }
+        if (!moveResult.isChanged()){
+            return;
         }
-        renderField();
+
+        cacheService.put(Cache.Cells, snapshotService.getSnapshot());
+        cacheService.put(Cache.Score, score);
+        cacheService.put(Cache.Best, bestScore);
+
+        updateScore(moveResult.getScore());
+        updateBest();
+        appendNewTile();
+
+        if (!moveService.hasMoves(cells)){
+            startNewGame();
+            return;
+        }
+        gameUI.renderField(cells);
     }
 
     public void undo(){
@@ -108,31 +105,13 @@ public class GameCenter {
         this.bestScore = best;
         this.score = score;
 
-        bestText.setText(String.valueOf(best));
-        scoreText.setText(String.valueOf(score));
+        gameUI.setBestScore(best);
+        gameUI.setScore(score);
 
         cells = cache;
-        renderField();
+        gameUI.renderField(cells);
     }
 
-    private  void renderField(){
-        int size = cells.length;
-
-        for (int i = 0; i < board.getChildCount(); i++) {
-            TextView cell = (TextView) board.getChildAt(i);
-
-            int row = i/size;
-            int col = i%size;
-
-            int value = cells[row][col];
-
-            if (value!=0){
-                cell.setText(String.valueOf(value));
-            }else{
-                cell.setText("");
-            }
-        }
-    }
 
     private void appendNewTile(){
         field.set(cells);
@@ -143,14 +122,13 @@ public class GameCenter {
     private void updateBest() {
         if (score > bestScore) {
             bestScore = score;
-            bestText.setText(String.valueOf(bestScore));
+            gameUI.setBestScore(bestScore);
         }
     }
 
-    private void updateScore(){
-        int add = moveService.getLastScoreGain();
-        score += add;
-        scoreText.setText(String.valueOf(score));
+    private void updateScore(int score){
+        this.score += score;
+        gameUI.setScore(this.score);
     }
 
     private void clearInterimData(){

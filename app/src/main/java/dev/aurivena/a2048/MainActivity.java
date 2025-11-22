@@ -47,18 +47,18 @@ public class MainActivity extends AppCompatActivity {
                 if (Math.abs(diffX) > Math.abs(e2.getY() - e1.getY())) {
                     if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffX < 0) {
-                            gameCenter.rotateField( State.LEFT);
+                            gameCenter.rotateField(State.LEFT);
                         } else {
-                            gameCenter.rotateField( State.RIGHT);
+                            gameCenter.rotateField(State.RIGHT);
                         }
                         return true;
                     }
                 }else {
                     if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffY < 0) {
-                            gameCenter.rotateField( State.DOWN);
+                            gameCenter.rotateField(State.UP);
                         } else {
-                            gameCenter.rotateField( State.UP);
+                            gameCenter.rotateField(State.DOWN);
                         }
                         return true;
                     }
