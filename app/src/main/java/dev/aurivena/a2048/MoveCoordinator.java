@@ -4,9 +4,9 @@ import dev.aurivena.a2048.domain.model.MoveResult;
 import dev.aurivena.a2048.domain.model.State;
 import dev.aurivena.a2048.domain.service.MoveService;
 
-public class GameState {
+public class MoveCoordinator {
     private final MoveService moveService;
-    public GameState(){
+    public MoveCoordinator(){
         moveService = new MoveService();
     }
 

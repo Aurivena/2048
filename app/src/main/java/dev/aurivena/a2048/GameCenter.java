@@ -8,14 +8,13 @@ import dev.aurivena.a2048.domain.model.MoveResult;
 import dev.aurivena.a2048.domain.model.State;
 import dev.aurivena.a2048.domain.service.CacheService;
 import dev.aurivena.a2048.domain.service.FieldService;
-import dev.aurivena.a2048.domain.service.MoveService;
 import dev.aurivena.a2048.domain.service.SnapshotService;
 
 public class GameCenter {
 
     private final CacheService cacheService;
     private final FieldService fieldService;
-    private final GameState gameState;
+    private final MoveCoordinator moveCoordinator;
     private final SnapshotService snapshotService;
     private final GameUI gameUI;
 
@@ -27,7 +26,7 @@ public class GameCenter {
 
     public GameCenter(GridLayout board, TextView scoreText, TextView bestText){
         cacheService = new CacheService();
-        gameState = new GameState();
+        moveCoordinator = new MoveCoordinator();
         fieldService = new FieldService();
         snapshotService = new SnapshotService();
         gameUI = new GameUI(board, scoreText, bestText);
@@ -51,7 +50,7 @@ public class GameCenter {
 
     public void rotateField(State state){
         snapshotService.copy(cells);
-        MoveResult moveResult = gameState.move(state,cells);
+        MoveResult moveResult = moveCoordinator.move(state,cells);
         if (!moveResult.isChanged()){
             return;
         }

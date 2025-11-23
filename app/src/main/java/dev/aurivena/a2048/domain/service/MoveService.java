@@ -18,9 +18,7 @@ public class MoveService {
             }
         }
 
-        if (checkSide(Side.Horizontal,field) || checkSide(Side.Vertical, field)) return true;
-
-        return false;
+        return (checkSide(Side.Horizontal,field) || checkSide(Side.Vertical, field));
     }
 
     private boolean checkSide(Side side, int[][] field){
@@ -67,7 +65,7 @@ public class MoveService {
             }
         }
 
-        for (int i = 0; i<n;i++){
+        for (int i = 0; i < n;i++){
             System.arraycopy(rotated[i],0,cells[i],0,n);
         }
     };
