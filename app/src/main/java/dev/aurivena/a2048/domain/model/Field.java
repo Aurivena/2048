@@ -11,7 +11,7 @@ public class Field {
         return cells;
     }
 
-    public void set(int[][] cells){
+    public void set(int[][] cells) {
         this.cells = cells;
     }
 }

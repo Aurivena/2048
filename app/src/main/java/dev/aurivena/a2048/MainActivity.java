@@ -5,7 +5,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.view.KeyEvent;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import dev.aurivena.a2048.domain.model.State;
 
 
@@ -21,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         Button newGameButton = findViewById(R.id.restartButton);
         Button undoButton = findViewById(R.id.undoButton);
 
-        gameCenter = new GameCenter(findViewById(R.id.board),findViewById(R.id.score),findViewById(R.id.best));
+        gameCenter = new GameCenter(findViewById(R.id.board), findViewById(R.id.score), findViewById(R.id.best));
 
         newGameButton.setOnClickListener(v -> gameCenter.startNewGame());
         undoButton.setOnClickListener(v -> gameCenter.undo());
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         return true;
                     }
-                }else {
+                } else {
                     if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffY < 0) {
                             gameCenter.rotateField(State.UP);
@@ -72,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onTouchEvent(MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
     }
-
 
 
     @Override

@@ -2,9 +2,10 @@ package dev.aurivena.a2048.domain.service;
 
 public class SnapshotService {
 
-    private  int[][] snapshot;
+    private int[][] snapshot;
 
-    public SnapshotService(){}
+    public SnapshotService() {
+    }
 
     public void copy(int[][] src) {
         int[][] dst = new int[src.length][src[0].length];
@@ -14,7 +15,7 @@ public class SnapshotService {
         snapshot = dst;
     }
 
-    public int[][] getSnapshot(){
+    public int[][] getSnapshot() {
         return snapshot;
     }
 }

@@ -8,11 +8,11 @@ public enum State {
 
     private final int value;
 
-    State(int value){
+    State(int value) {
         this.value = value;
     }
 
-    public int getValue(){
+    public int getValue() {
         return this.value;
     }
 }
