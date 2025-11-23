@@ -15,4 +15,8 @@ public class MoveResult {
     public int getScore(){
         return score;
     }
+
+    public boolean isValid(){
+        return score!=-1;
+    }
 }

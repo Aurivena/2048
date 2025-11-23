@@ -15,7 +15,7 @@ public class GameCenter {
 
     private final CacheService cacheService;
     private final FieldService fieldService;
-    private final MoveService moveService;
+    private final GameState gameState;
     private final SnapshotService snapshotService;
     private final GameUI gameUI;
 
@@ -27,7 +27,7 @@ public class GameCenter {
 
     public GameCenter(GridLayout board, TextView scoreText, TextView bestText){
         cacheService = new CacheService();
-        moveService = new MoveService();
+        gameState = new GameState();
         fieldService = new FieldService();
         snapshotService = new SnapshotService();
         gameUI = new GameUI(board, scoreText, bestText);
@@ -36,14 +36,14 @@ public class GameCenter {
     public void startNewGame() {
         final int size = 4;
         field = new Field(size);
-        gameUI.setScore(0);
         fieldService.spawnInitialTiles(this.field);
         cells = field.cells();
         clearInterimData();
 
         Integer cachedBest = cacheService.get(Cache.Best);
         if (cachedBest != null && bestScore < cachedBest) {
-                gameUI.setBestScore(bestScore);
+            bestScore = cachedBest;
+            gameUI.setBestScore(bestScore);
         }
 
        gameUI.renderField(cells);
@@ -51,21 +51,13 @@ public class GameCenter {
 
     public void rotateField(State state){
         snapshotService.copy(cells);
-        int normalized = 4;
-        int coups = 0;
-        while (coups<state.getValue()){
-            cells =  moveService.rotate(cells);
-            coups++;
-        }
-
-       MoveResult moveResult = moveService.move(cells);
-
-        while (normalized>state.getValue() && state.getValue() != State.LEFT.getValue()) {
-            cells = moveService.rotate(cells);
-            normalized--;
-        }
-
+        MoveResult moveResult = gameState.move(state,cells);
         if (!moveResult.isChanged()){
+            return;
+        }
+
+        if (!moveResult.isValid()){
+            startNewGame();
             return;
         }
 
@@ -77,10 +69,6 @@ public class GameCenter {
         updateBest();
         appendNewTile();
 
-        if (!moveService.hasMoves(cells)){
-            startNewGame();
-            return;
-        }
         gameUI.renderField(cells);
     }
 
@@ -134,7 +122,8 @@ public class GameCenter {
     private void clearInterimData(){
         snapshotService.copy(cells);
         cacheService.put(Cache.Cells,snapshotService.getSnapshot());
-        cacheService.put(Cache.Score,0);
         score = 0;
+        cacheService.put(Cache.Score,score);
+        gameUI.setScore(score);
     }
 }

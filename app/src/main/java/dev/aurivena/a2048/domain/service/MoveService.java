@@ -57,17 +57,19 @@ public class MoveService {
         return new MoveResult(changed, lastScoreGain);
     }
 
-    public int[][] rotate(int[][] field){
-        int n = field.length;
-        int[][] result = new int[n][n];
+    public void rotate(int[][] cells){
+        int n = cells.length;
+        int[][] rotated = new int[n][n];
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                result[j][n-1-i] = field[i][j];
+                rotated[j][n-1-i] = cells[i][j];
             }
         }
 
-        return result;
+        for (int i = 0; i<n;i++){
+            System.arraycopy(rotated[i],0,cells[i],0,n);
+        }
     };
 
     private int merge(int[] row){
