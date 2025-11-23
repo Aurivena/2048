@@ -12,6 +12,10 @@ public class MoveCoordinator {
     }
 
     public MoveResult move(State state, int[][] cells) {
+        if (!moveService.hasMoves(cells)) {
+            return new MoveResult(false, -1);
+        }
+
         int normalized = 4;
         int coups = 0;
         while (coups < state.getValue()) {
@@ -24,10 +28,6 @@ public class MoveCoordinator {
         while (normalized > state.getValue() && state.getValue() != State.LEFT.getValue()) {
             moveService.rotate(cells);
             normalized--;
-        }
-
-        if (!moveService.hasMoves(cells)) {
-            return new MoveResult(false, -1);
         }
 
         return moveResult;
