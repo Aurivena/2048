@@ -51,13 +51,15 @@ public class GameCenter {
 
     public void rotateField(State state) {
         snapshotService.copy(cells);
+
         MoveResult moveResult = moveCoordinator.move(state, cells);
-        if (!moveResult.isChanged()) {
-            return;
-        }
 
         if (!moveResult.isValid()) {
             startNewGame();
+            return;
+        }
+
+        if (!moveResult.isChanged()) {
             return;
         }
 

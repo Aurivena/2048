@@ -19,10 +19,6 @@ public class MoveCoordinator {
             coups++;
         }
 
-        if (!moveService.hasMoves(cells)) {
-            return new MoveResult(false, -1);
-        }
-
         MoveResult moveResult = moveService.move(cells);
 
         while (normalized > state.getValue() && state.getValue() != State.LEFT.getValue()) {
@@ -30,6 +26,9 @@ public class MoveCoordinator {
             normalized--;
         }
 
+        if (!moveService.hasMoves(cells)) {
+            return new MoveResult(false, -1);
+        }
 
         return moveResult;
     }
