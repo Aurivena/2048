@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         Button newGameButton = findViewById(R.id.restartButton);
         Button undoButton = findViewById(R.id.undoButton);
 
-        gameCenter = new GameCenter(findViewById(R.id.board), findViewById(R.id.score), findViewById(R.id.best));
+        gameCenter = new GameCenter(this, findViewById(R.id.board), findViewById(R.id.score), findViewById(R.id.best));
 
         newGameButton.setOnClickListener(v -> gameCenter.startNewGame());
         undoButton.setOnClickListener(v -> gameCenter.undo());

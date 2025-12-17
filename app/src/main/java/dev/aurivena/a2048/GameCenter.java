@@ -1,5 +1,6 @@
 package dev.aurivena.a2048;
 
+import android.content.Context;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
@@ -25,8 +26,8 @@ public class GameCenter {
     private int score;
 
 
-    public GameCenter(GridLayout board, TextView scoreText, TextView bestText) {
-        cacheService = new CacheService();
+    public GameCenter(Context context, GridLayout board, TextView scoreText, TextView bestText) {
+        cacheService = new CacheService(context);
         moveCoordinator = new MoveCoordinator();
         fieldService = new FieldService();
         snapshotService = new SnapshotService();
@@ -40,11 +41,11 @@ public class GameCenter {
         cells = field.cells();
         clearInterimData();
 
-        Integer cachedBest = cacheService.get(Cache.Best);
-        if (cachedBest != null && bestScore < cachedBest) {
-            bestScore = cachedBest;
-            gameUI.setBestScore(bestScore);
+        Integer savedBest = cacheService.get(Cache.HighScore);
+        if (savedBest != null) {
+            bestScore = savedBest;
         }
+        gameUI.setBestScore(bestScore);
 
         gameUI.renderField(cells);
     }
@@ -65,7 +66,7 @@ public class GameCenter {
 
         cacheService.put(Cache.Cells, snapshotService.getSnapshot());
         cacheService.put(Cache.Score, score);
-        cacheService.put(Cache.Best, bestScore);
+        cacheService.put(Cache.Best, bestScore); // Saves the previous best for Undo
 
         updateScore(moveResult.getScore());
         updateBest();
@@ -95,6 +96,10 @@ public class GameCenter {
         this.bestScore = best;
         this.score = score;
 
+        // When undoing, we also update the persistent high score to match the reverted state
+        // This ensures if we undo a new record, the record is removed from disk too.
+        cacheService.put(Cache.HighScore, this.bestScore);
+
         gameUI.setBestScore(best);
         gameUI.setScore(score);
 
@@ -113,6 +118,7 @@ public class GameCenter {
         if (score > bestScore) {
             bestScore = score;
             gameUI.setBestScore(bestScore);
+            cacheService.put(Cache.HighScore, bestScore);
         }
     }
 
