@@ -131,10 +131,10 @@ public class MoveServiceTest {
         moveService.rotate(field);
 
         int[][] expected = {
-                {4, 8, 12, 16},
-                {3, 7, 11, 15},
-                {2, 6, 10, 14},
-                {1, 5, 9, 13}
+                {13, 9, 5, 1},
+                {14, 10, 6, 2},
+                {15, 11, 7, 3},
+                {16, 12, 8, 4}
         };
 
         /*
